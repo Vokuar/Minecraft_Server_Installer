@@ -4,13 +4,15 @@ import string
 import platform
 import subprocess
 
-# Function to install a Minecraft server
-def install_server(server_type):
-
-    # Start the server after installation
-    start_server(server_file)
-
-    print("Minecraft server installation and setup complete.")
+# Function to start the server
+def start_server(server_file, server_type):
+    if server_type == "java":
+        subprocess.run(["java", "-Xmx2G", "-Xms1G", "-jar", server_file, "nogui"])
+    elif server_type == "bedrock":
+        subprocess.run(["./bedrock_server"])
+    else:
+        print("Invalid server type.")
+        exit(1)
 
 # Function to generate a random alphanumeric name
 def generate_random_name(length):
