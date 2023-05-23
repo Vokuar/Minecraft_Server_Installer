@@ -100,15 +100,43 @@ def install_server(server_name, server_type):
 
     # Hide the server directory
     hide_folder(server_dir)
+    
+# Determine the server file URL based on the server type
+if server_type == 1:  # Java server
+    # Prompt for subcategory
+    subcategory = int(input("Select the Java server subcategory:\n1. Vanilla\n2. Paper\n3. Forge\n4. Fabric\n"))
 
-    # Determine the server file URL based on the server type
-    if server_type == "java":
-        server_url = "https://dummy-java-server-url.com/server.jar"
-    elif server_type == "bedrock":
-        server_url = "https://dummy-bedrock-server-url.com/server.exe"
+    if subcategory == 1:  # Vanilla server
+        server_url = "https://dummy-java-vanilla-server-url.com/server.jar"
+    elif subcategory == 2:  # Paper server
+        server_url = "https://dummy-java-paper-server-url.com/server.jar"
+    elif subcategory == 3:  # Forge server
+        server_url = "https://dummy-java-forge-server-url.com/server.jar"
+    elif subcategory == 4:  # Fabric server
+        server_url = "https://dummy-java-fabric-server-url.com/server.jar"
     else:
-        print("Invalid server type.")
+        print("Invalid subcategory.")
         exit(1)
+
+elif server_type == 2:  # Bedrock server
+    # Prompt for subcategory
+    subcategory = int(input("Select the Bedrock server subcategory:\n1. Pocket Edition\n2. Windows 10 Edition\n3. Xbox One Edition\n4. PS4 Edition\n"))
+
+    if subcategory == 1:  # Pocket Edition server
+        server_url = "https://dummy-bedrock-pocket-edition-server-url.com/server.exe"
+    elif subcategory == 2:  # Windows 10 Edition server
+        server_url = "https://dummy-bedrock-windows-10-edition-server-url.com/server.exe"
+    elif subcategory == 3:  # Xbox One Edition server
+        server_url = "https://dummy-bedrock-xbox-one-edition-server-url.com/server.exe"
+    elif subcategory == 4:  # PS4 Edition server
+        server_url = "https://dummy-bedrock-ps4-edition-server-url.com/server.exe"
+    else:
+        print("Invalid subcategory.")
+        exit(1)
+
+else:
+    print("Invalid server type.")
+    exit(1)
 
     # Download the server file
     server_file = os.path.join(server_dir, "server.jar")
