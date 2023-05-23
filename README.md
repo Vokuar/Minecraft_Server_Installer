@@ -6,7 +6,7 @@ This is a script to simplify the process of downloading and installing Minecraft
 
 - Download and install Minecraft servers with ease.
 - Support for Java Edition and Bedrock Edition.
-- Randomly generated server names for added uniqueness.
+- User-generated server names for added customization.
 
 ## Prerequisites
 
