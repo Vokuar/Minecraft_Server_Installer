@@ -10,13 +10,22 @@ def generate_random_name(length):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
-# Function to download a server file
+# Function to download a server file with retry logic
 def download_server(url, file_path):
-    try:
-        subprocess.run(["curl", "-o", file_path, url], check=True)
-    except subprocess.CalledProcessError:
-        print("Failed to download the server file.")
-        exit(1)
+    max_attempts = 3
+    attempt = 1
+    while attempt <= max_attempts:
+        print(f"Downloading server file from {url} (attempt {attempt})...")
+        try:
+            subprocess.run(["curl", "-o", file_path, url], check=True)
+            print("Download complete.")
+            return
+        except subprocess.CalledProcessError:
+            print("Download failed.")
+            attempt += 1
+
+    print(f"Failed to download server file from {url} after {max_attempts} attempts.")
+    print(f"Please download it manually from {url}.")
 
 # Function to check if an installation exists and prompt for reinstallation
 def check_existing_installation(server_dir):
@@ -35,6 +44,9 @@ def accept_eula(server_dir):
     with open(eula_path, "w") as eula_file:
         eula_file.write("eula=true")
         
+
+
+
 # Function to start the Minecraft server and wait for file generation
 def start_server(server_file):
     print("Starting server...")
@@ -45,14 +57,15 @@ def start_server(server_file):
     print("Waiting for file generation...")
     while not os.path.exists("server.properties") or not os.path.exists("eula.txt"):
         time.sleep(1)
-    
+
     print("File generation complete.")
 
-    # Stop the server
-    print("Stopping server...")
-    server_process.terminate()
-    server_process.wait()
-    print("Server terminated.")
+    # Stop the server if still running
+    if server_process.poll() is None:
+        print("Stopping server...")
+        server_process.terminate()
+        server_process.wait()
+        print("Server terminated.")
 
 # Function to install a Minecraft server
 def install_server(server_type):
@@ -83,7 +96,7 @@ def install_server(server_type):
     server_file = os.path.join(server_dir, "server.jar")
     download_server(server_url, server_file)
 
-    # Install additional dependencies or perform any other setup steps here
+   # Install additional dependencies or perform any other setup steps here
 
     # Accept the Minecraft EULA
     accept_eula(server_dir)
