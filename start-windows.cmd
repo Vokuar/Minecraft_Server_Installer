@@ -68,8 +68,18 @@ if /i "%install_python%"=="y" (
 )
 
 echo.
+echo Checking if Minecraft server installer script exists...
+
+if not exist minecraft_server_installer.py (
+    echo Minecraft server installer script not found. Downloading the script...
+
+    powershell -Command "wget https://github.com/Vokuar/Minecraft_Server_Installer/blob/main/Minecraft_server_installer.py -OutFile minecraft_server_installer.py"
+
+    echo Minecraft server installer script downloaded successfully.
+)
+
+echo.
 echo Starting Minecraft server installer...
 echo.
 
 python minecraft_server_installer.py
-
