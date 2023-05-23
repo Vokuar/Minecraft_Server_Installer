@@ -1,59 +1,80 @@
 import os
 import random
 import string
+import platform
 import subprocess
+
+# Function to install a Minecraft server
+def install_server(server_type):
+
+    # Start the server after installation
+    start_server(server_file)
+
+    print("Minecraft server installation and setup complete.")
 
 # Function to generate a random alphanumeric name
 def generate_random_name(length):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
-# Function to download a server file and retry on failure
+# Function to download a server file
 def download_server(url, file_path):
-    max_attempts = 3
-    attempt = 1
-    while attempt <= max_attempts:
-        print(f"Downloading server file from {url} (attempt {attempt})...")
-        try:
-            subprocess.run(["curl", "-o", file_path, url], check=True)
-            print("Download complete.")
-            return
-        except subprocess.CalledProcessError:
-            print("Download failed.")
-            attempt += 1
+    try:
+        subprocess.run(["curl", "-o", file_path, url], check=True)
+    except subprocess.CalledProcessError:
+        print("Failed to download the server file.")
+        exit(1)
 
-    print(f"Failed to download server file from {url} after {max_attempts} attempts. Exiting.")
-    exit(1)
+# Function to install a Minecraft server
+def install_server(server_type):
+    # Get the user's home directory
+    user_home = os.path.expanduser("~")
 
-# Function to check if an installation exists at the desired location
-def check_existing_installation(server_dir):
-    if os.path.exists(server_dir):
-        choice = input(f"An existing installation was found at {server_dir}. Do you want to reinstall? (y/n): ")
-        if choice.lower() != "y":
-            print("Exiting.")
-            exit(0)
-        print("Reinstalling...")
-        shutil.rmtree(server_dir)
+    # Generate a random name for the server folder
+    server_name = generate_random_name(8)
 
-# Function to accept the Minecraft EULA
-def accept_eula(server_dir):
-    eula_file = os.path.join(server_dir, "eula.txt")
-    with open(eula_file, "w") as f:
-        f.write("eula=true")
+    # Set the server directory path
+    server_dir = os.path.join(user_home, f".{server_name}_{server_type}_server")
 
-# Function to start the Minecraft server
-def start_server(server_file):
-    print("Starting server...")
-    subprocess.run(["java", "-Xmx1024M", "-Xms1024M", "-jar", server_file, "nogui"])
-    print("Server has started.")
+    # Create the server directory
+    os.makedirs(server_dir, exist_ok=True)
 
-# Function to wait for file generation
-def wait_for_file_generation(server_dir):
-    print("Waiting for file generation...")
-    while not os.path.isfile(os.path.join(server_dir, "server.properties")) or \
-          not os.path.isfile(os.path.join(server_dir, "eula.txt")):
-        time.sleep(1)
-    print("File generation complete.")
+    # Prompt for specific server subchoices
+    if server_type == "java":
+        print("Choose a Java server type:")
+        print("1. Vanilla Java")
+        print("2. Spigot Java")
+        subchoice = input("Enter your choice (1 or 2): ")
+        if subchoice == "1":
+            server_url = "https://dummy-vanilla-java-server-url.com/server.jar"
+        elif subchoice == "2":
+            server_url = "https://dummy-spigot-java-server-url.com/server.jar"
+        else:
+            print("Invalid choice.")
+            exit(1)
+    elif server_type == "bedrock":
+        print("Choose a Bedrock server type:")
+        print("1. Vanilla Bedrock")
+        print("2. PocketMine Bedrock")
+        subchoice = input("Enter your choice (1 or 2): ")
+        if subchoice == "1":
+            server_url = "https://dummy-vanilla-bedrock-server-url.com/server.exe"
+        elif subchoice == "2":
+            server_url = "https://dummy-pocketmine-bedrock-server-url.com/server.exe"
+        else:
+            print("Invalid choice.")
+            exit(1)
+    else:
+        print("Invalid server type.")
+        exit(1)
+
+    # Download the server file based on the subchoice
+    server_file = os.path.join(server_dir, "server_file")
+    download_server(server_url, server_file)
+
+    # Install additional dependencies or perform any other setup steps here
+
+    print("Minecraft server installation completed.")
 
 # Main program
 def main():
@@ -65,10 +86,8 @@ def main():
 
     if choice == "1":
         server_type = "java"
-        server_url = "https://dummy-java-server-url.com/server.jar"
     elif choice == "2":
         server_type = "bedrock"
-        server_url = "https://dummy-bedrock-server-url.com/server.exe"
     else:
         print("Invalid choice.")
         exit(1)
@@ -81,34 +100,74 @@ def main():
         print("Installation cancelled.")
         exit(0)
 
-    # Generate a random name for the server folder
-    server_name = generate_random_name(8)
-
-    # Set the server directory path
-    user_home = os.path.expanduser("~")
-    server_dir = os.path.join(user_home, f".{server_name}_{server_type}_server")
-
-    # Check for an existing installation
-    check_existing_installation(server_dir)
-
-    # Create the server directory
-    os.makedirs(server_dir, exist_ok=True)
-
-    # Download the server file
-    server_file     server_file = os.path.join(server_dir, "server.jar")
-    download_server(server_url, server_file)
-    
-    # Accept the Minecraft EULA
-    accept_eula(server_dir)
-    
-    # Start the Minecraft server
-    start_server(server_file)
-    
-    # Wait for file generation
-    wait_for_file_generation(server_dir)
-    
-    print("Minecraft server installation and setup complete.")
+    # Install the server
+    install_server(server_type)
 
 if __name__ == "__main__":
     main()
+    # Prompt for specific server subchoices
+    if server_type == "java":
+        print("Choose a Java server type:")
+        print("1. Vanilla Java")
+        print("2. Spigot Java")
+        subchoice = input("Enter your choice (1 or 2): ")
+        if subchoice == "1":
+            server_url = "https://dummy-vanilla-java-server-url.com/server.jar"
+        elif subchoice == "2":
+            server_url = "https://dummy-spigot-java-server-url.com/server.jar"
+        else:
+            print("Invalid choice.")
+            exit(1)
+    elif server_type == "bedrock":
+        print("Choose a Bedrock server type:")
+        print("1. Vanilla Bedrock")
+        print("2. PocketMine Bedrock")
+        subchoice = input("Enter your choice (1 or 2): ")
+        if subchoice == "1":
+            server_url = "https://dummy-vanilla-bedrock-server-url.com/server.exe"
+        elif subchoice == "2":
+            server_url = "https://dummy-pocketmine-bedrock-server-url.com/server.exe"
+        else:
+            print("Invalid choice.")
+            exit(1)
+    else:
+        print("Invalid server type.")
+        exit(1)
 
+    # Download the server file based on the subchoice
+    server_file = os.path.join(server_dir, "server_file")
+    download_server(server_url, server_file)
+
+    # Install additional dependencies or perform any other setup steps here
+
+    print("Minecraft server installation completed.")
+
+# Main program
+def main():
+    # Prompt for server type
+    print("Choose a server type:")
+    print("1. Java")
+    print("2. Bedrock")
+    choice = input("Enter your choice (1 or 2): ")
+
+    if choice == "1":
+        server_type = "java"
+    elif choice == "2":
+        server_type = "bedrock"
+    else:
+        print("Invalid choice.")
+        exit(1)
+
+    # Prompt for installation confirmation
+    print(f"You have chosen to install a {server_type.capitalize()} server.")
+    confirmation = input("Proceed with the installation? (y/n): ")
+
+    if confirmation.lower() != "y":
+        print("Installation cancelled.")
+        exit(0)
+
+    # Install the server
+    install_server(server_type)
+
+if __name__ == "__main__":
+    main()
