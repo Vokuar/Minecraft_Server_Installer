@@ -5,6 +5,24 @@ import time
 import shutil
 import platform
 
+# Function to create a hidden folder
+def hide_folder(path):
+    if platform.system() == "Windows":
+        try:
+            import win32file
+            win32file.SetFileAttributes(path, win32file.FILE_ATTRIBUTE_HIDDEN)
+        except ImportError:
+            choice = input("Unable to hide folder on Windows. Do you want to install pywin32? (y/n): ")
+            if choice.lower() == "y":
+                subprocess.run(["pip", "install", "pywin32"])
+            else:
+                print("Continuing without hiding the folder.")
+    elif platform.system() == "Darwin" or platform.system() == "Linux":
+        try:
+            subprocess.run(["chflags", "hidden", path])
+        except subprocess.CalledProcessError:
+            print("Unable to hide folder on macOS or Linux.")
+
 # Function to generate the server name based on user input and server type
 def generate_server_name(server_name, server_type):
     return f"{server_name}_{server_type}_Server"
@@ -44,42 +62,24 @@ def accept_eula(server_dir):
         eula_file.write("eula=true")
 
 # Function to start the Minecraft server and wait for file generation
-def start_server(server_file):
+def start_server(server_file, server_dir):
     print("Starting server...")
     server_process = subprocess.Popen(["java", "-Xmx1024M", "-Xms1024M", "-jar", server_file, "nogui"])
     time.sleep(10)
 
     # Wait for file generation
     print("Waiting for file generation...")
-    while not os.path.exists("server.properties") or not os.path.exists("eula.txt"):
+    while not os.path.exists(os.path.join(server_dir, "server.properties")) or not os.path.exists(os.path.join(server_dir, "eula.txt")):
         time.sleep(1)
 
     print("File generation complete.")
-    
+
     # Stop the server if still running
     if server_process.poll() is None:
         print("Stopping server...")
         server_process.terminate()
         server_process.wait()
         print("Server terminated.")
-
-# Function to create a hidden folder
-def hide_folder(path):
-    if platform.system() == "Windows":
-        try:
-            import win32file
-            win32file.SetFileAttributes(path, win32file.FILE_ATTRIBUTE_HIDDEN)
-        except ImportError:
-            choice = input("Unable to hide folder on Windows. Do you want to install pywin32? (y/n): ")
-            if choice.lower() == "y":
-                subprocess.run(["pip", "install", "pywin32"])
-            else:
-                print("Continuing without hiding the folder.")
-    elif platform.system() == "Darwin" or platform.system() == "Linux":
-        try:
-            subprocess.run(["chflags", "hidden", path])
-        except subprocess.CalledProcessError:
-            print("Unable to hide folder on macOS or Linux.")
 
 # Function to install a Minecraft server
 def install_server(server_name, server_type):
@@ -92,7 +92,7 @@ def install_server(server_name, server_type):
     # Set the server directory path
     server_dir = os.path.join(user_home, server_name)
 
-        # Check for an existing installation and prompt for reinstallation
+    # Check for an existing installation and prompt for reinstallation
     check_existing_installation(server_dir)
 
     # Create the server directory
@@ -120,22 +120,7 @@ def install_server(server_name, server_type):
     accept_eula(server_dir)
 
     # Start the server
-    start_server(server_file)
+    start_server(server_file, server_dir)
+
 
     print("Minecraft server installation and setup completed.")
-
-# Main program
-def main():
-    # Get the server name from user input
-    server_name = input("Enter the server name: ")
-
-    # Set the server type based on the server file source
-    server_type = "java"  # Replace with the logic to determine the server type based on the server file source
-
-    # Install the Minecraft server
-    install_server(server_name, server_type)
-
-# Run the main program
-if __name__ == "__main__":
-    main()
-
