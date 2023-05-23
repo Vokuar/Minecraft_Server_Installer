@@ -1,14 +1,12 @@
 import os
-import random
 import string
-import platform
 import subprocess
 import time
+import shutil
 
-# Function to generate a random alphanumeric name
-def generate_random_name(length):
-    characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for _ in range(length))
+# Function to generate the server name based on user input and server type
+def generate_server_name(server_name, server_type):
+    return f"{server_name}_{server_type}_Server"
 
 # Function to download a server file with retry logic
 def download_server(url, file_path):
@@ -43,9 +41,6 @@ def accept_eula(server_dir):
     eula_path = os.path.join(server_dir, "eula.txt")
     with open(eula_path, "w") as eula_file:
         eula_file.write("eula=true")
-        
-
-
 
 # Function to start the Minecraft server and wait for file generation
 def start_server(server_file):
@@ -59,8 +54,8 @@ def start_server(server_file):
         time.sleep(1)
 
     print("File generation complete.")
-
-    # Stop the server if still running
+    
+     # Stop the server if still running
     if server_process.poll() is None:
         print("Stopping server...")
         server_process.terminate()
@@ -68,15 +63,15 @@ def start_server(server_file):
         print("Server terminated.")
 
 # Function to install a Minecraft server
-def install_server(server_type):
+def install_server(server_name, server_type):
     # Get the user's home directory
     user_home = os.path.expanduser("~")
 
-    # Generate a random name for the server folder
-    server_name = generate_random_name(8)
+    # Generate the server name
+    server_name = generate_server_name(server_name, server_type)
 
     # Set the server directory path
-    server_dir = os.path.join(user_home, f".{server_name}_{server_type}_server")
+    server_dir = os.path.join(user_home, server_name)
 
     # Check for an existing installation and prompt for reinstallation
     check_existing_installation(server_dir)
@@ -84,7 +79,7 @@ def install_server(server_type):
     # Create the server directory
     os.makedirs(server_dir, exist_ok=True)
 
-    # Download the server file based on the server type
+    # Determine the server file URL based on the server type
     if server_type == "java":
         server_url = "https://dummy-java-server-url.com/server.jar"
     elif server_type == "bedrock":
@@ -93,37 +88,30 @@ def install_server(server_type):
         print("Invalid server type.")
         exit(1)
 
+    # Download the server file
     server_file = os.path.join(server_dir, "server.jar")
     download_server(server_url, server_file)
 
-   # Install additional dependencies or perform any other setup steps here
+    # Additional setup steps or dependencies can be added here
 
     # Accept the Minecraft EULA
     accept_eula(server_dir)
 
-    # Start the server and wait for file generation
+    # Start the server
     start_server(server_file)
 
     print("Minecraft server installation and setup completed.")
 
 # Main program
 def main():
-    # Prompt for server type
-    print("Choose a server type:")
-    print("1. Java")
-    print("2. Bedrock")
-    choice = input("Enter your choice (1 or 2): ")
+    # Get the server name from user input
+    server_name = input("Enter the server name: ")
 
-    if choice == "1":
-        server_type = "java"
-    elif choice == "2":
-        server_type = "bedrock"
-    else:
-        print("Invalid choice. Exiting.")
-        exit(1)
+    # Set the server type based on the server file source
+    server_type = "java"  # Replace with the logic to determine the server type based on the server file source
 
     # Install the Minecraft server
-    install_server(server_type)
+    install_server(server_name, server_type)
 
 # Run the main program
 if __name__ == "__main__":
