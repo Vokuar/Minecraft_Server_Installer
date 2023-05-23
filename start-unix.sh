@@ -1,6 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 #!/bin/bash
 
+#!/bin/bash
+
 echo "This script will download and install Python."
 echo "Python is required to run the Minecraft server installer script."
 echo
@@ -14,40 +16,48 @@ if [[ $download_python == [Yy] ]]; then
         echo "Python is already installed."
     else
         echo "Python is not installed. Attempting to install using the package manager..."
-        
-        # Install Python using the package manager (apt, yum, etc.)
-        if command -v apt >/dev/null 2>&1; then
-            echo "Installing Python using apt..."
-            sudo apt update
-            sudo apt install python3 -y
-        elif command -v yum >/dev/null 2>&1; then
-            echo "Installing Python using yum..."
-            sudo yum update
-            sudo yum install python3 -y
-        else
-            echo "Unable to determine the package manager. Falling back to manual installation..."
-            
-            # Download Python from the web
-            echo "Downloading Python..."
-            wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz -O python.tar.xz
-            if [ ! -f python.tar.xz ]; then
-                echo "Failed to download Python. Exiting..."
-                exit 1
-            fi
-            echo "Python downloaded successfully."
 
-            echo "Installing Python..."
-            tar -xf python.tar.xz
-            cd Python-3.10.0
-            ./configure --prefix=$HOME/.python
-            make -j$(nproc)
-            make install
-            cd ..
-            if [ ! -d $HOME/.python ]; then
-                echo "Failed to install Python. Exiting..."
-                exit 1
+        if [[ -n "$TERMUX_VERSION" ]]; then
+            echo "Termux environment detected. Installing Python without sudo..."
+            pkg update
+            pkg install python -y
+        else
+            echo "Termux environment not detected. Installing Python using the package manager..."
+
+            # Install Python using the package manager (apt, yum, etc.)
+            if command -v apt >/dev/null 2>&1; then
+                echo "Installing Python using apt..."
+                sudo apt update
+                sudo apt install python3 -y
+            elif command -v yum >/dev/null 2>&1; then
+                echo "Installing Python using yum..."
+                sudo yum update
+                sudo yum install python3 -y
+            else
+                echo "Unable to determine the package manager. Falling back to manual installation..."
+
+                # Download Python from the web
+                echo "Downloading Python..."
+                wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tar.xz -O python.tar.xz
+                if [ ! -f python.tar.xz ]; then
+                    echo "Failed to download Python. Exiting..."
+                    exit 1
+                fi
+                echo "Python downloaded successfully."
+
+                echo "Installing Python..."
+                tar -xf python.tar.xz
+                cd Python-3.10.0
+                ./configure --prefix=$HOME/.python
+                make -j$(nproc)
+                make install
+                cd ..
+                if [ ! -d $HOME/.python ]; then
+                    echo "Failed to install Python. Exiting..."
+                    exit 1
+                fi
+                echo "Python installed successfully."
             fi
-            echo "Python installed successfully."
         fi
     fi
 else
