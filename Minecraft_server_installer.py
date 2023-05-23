@@ -3,6 +3,7 @@ import string
 import subprocess
 import time
 import shutil
+import platform
 
 # Function to generate the server name based on user input and server type
 def generate_server_name(server_name, server_type):
@@ -55,12 +56,30 @@ def start_server(server_file):
 
     print("File generation complete.")
     
-     # Stop the server if still running
+    # Stop the server if still running
     if server_process.poll() is None:
         print("Stopping server...")
         server_process.terminate()
         server_process.wait()
         print("Server terminated.")
+
+# Function to create a hidden folder
+def hide_folder(path):
+    if platform.system() == "Windows":
+        try:
+            import win32file
+            win32file.SetFileAttributes(path, win32file.FILE_ATTRIBUTE_HIDDEN)
+        except ImportError:
+            choice = input("Unable to hide folder on Windows. Do you want to install pywin32? (y/n): ")
+            if choice.lower() == "y":
+                subprocess.run(["pip", "install", "pywin32"])
+            else:
+                print("Continuing without hiding the folder.")
+    elif platform.system() == "Darwin" or platform.system() == "Linux":
+        try:
+            subprocess.run(["chflags", "hidden", path])
+        except subprocess.CalledProcessError:
+            print("Unable to hide folder on macOS or Linux.")
 
 # Function to install a Minecraft server
 def install_server(server_name, server_type):
@@ -73,11 +92,14 @@ def install_server(server_name, server_type):
     # Set the server directory path
     server_dir = os.path.join(user_home, server_name)
 
-    # Check for an existing installation and prompt for reinstallation
+        # Check for an existing installation and prompt for reinstallation
     check_existing_installation(server_dir)
 
     # Create the server directory
     os.makedirs(server_dir, exist_ok=True)
+
+    # Hide the server directory
+    hide_folder(server_dir)
 
     # Determine the server file URL based on the server type
     if server_type == "java":
@@ -116,3 +138,4 @@ def main():
 # Run the main program
 if __name__ == "__main__":
     main()
+
