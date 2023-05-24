@@ -5,20 +5,22 @@ import time
 import shutil
 import platform
 
+
 # Java server URLs
 JAVA_SERVER_URLS = {
-    "vanilla": "https://dummy-java-vanilla-server-url.com/server.jar",
-    "paper": "https://dummy-java-paper-server-url.com/server.jar",
-    "forge": "https://dummy-java-forge-server-url.com/server.jar",
-    "fabric": "https://dummy-java-fabric-server-url.com/server.jar"
+    "vanilla": "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar",
+    "Paper": "https://papermc.io/api/v1/paper/{}/latest/download",
+    "Forge": "https://files.minecraftforge.net/maven/net/minecraftforge/forge/{}/forge-{}-installer.jar",
+    "Fabric": "https://maven.fabricmc.net/net/fabricmc/fabric-server-launcher/{}/fabric-server-launcher-{}-universal.jar"
 }
 
 # Bedrock server URLs
 BEDROCK_SERVER_URLS = {
-    "pocket": "https://dummy-bedrock-pocket-edition-server-url.com/server.exe",
-    "win10": "https://dummy-bedrock-windows-10-edition-server-url.com/server.exe",
-    "xbox": "https://dummy-bedrock-xbox-one-edition-server-url.com/server.exe",
-    "ps4": "https://dummy-bedrock-ps4-edition-server-url.com/server.exe"
+    "Bedrock": "https://dummy-bedrock-server-url.com/server.exe",
+    "PocketMine": "https://dummy-pocketmine-server-url.com/server.phar",
+    "Tesseract": "https://dummy-tesseract-server-url.com/server.zip",
+    "BlueLight": "https://dummy-bluelight-server-url.com/server.jar",
+    "Nukkit": "https://dummy-nukkit-server-url.com/server.jar",
 }
 
 # Function to create a hidden folder
