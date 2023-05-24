@@ -1,22 +1,28 @@
+# File management and system
 import os
-import string
-import subprocess
-import time
-import shutil
-import platform
-import requests
-import json
 import pathlib
+import shutil
 
-# Java server URLs
+# Process and system information
+import platform
+import subprocess
+
+# Time and date
+import time
+
+# Data serialization and parsing
+import json
+
+# Network and web requests
+import requests
+
+# Define server URLs for each type of server
 JAVA_SERVER_URLS = {
     "vanilla": "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar",
     "Paper": lambda version: "https://api.papermc.io/v2/projects/paper/versions/{}/builds/{}/downloads/paper-{}-{}.jar".format(version, get_latest_build_number(version), version, get_latest_build_number(version)),
     "Forge": "https://files.minecraftforge.net/maven/net/minecraftforge/forge/{}/forge-{}-installer.jar",
     "Fabric": "https://maven.fabricmc.net/net/fabricmc/fabric-server-launcher/{}/fabric-server-launcher-{}-universal.jar"
 }
-
-# Bedrock server URLs
 BEDROCK_SERVER_URLS = {
     "Bedrock Dedicated Server": "https://dummy-bedrock-server-url.com/server.exe",
     "PocketMine": "https://dummy-pocketmine-server-url.com/server.phar",
@@ -250,3 +256,4 @@ def start_server(server_file, server_dir):
         print("Server terminated.")
 
     print("Minecraft server installation and setup completed.")
+
