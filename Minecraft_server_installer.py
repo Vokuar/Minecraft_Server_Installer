@@ -4,19 +4,34 @@ import subprocess
 import time
 import shutil
 import platform
+import requests
+import json
 
+def get_latest_build_number(version_number):
+    url = f"https://papermc.io/api/v2/projects/paper/versions/{version_number}"
+
+    response = requests.get(url)
+    if not response.ok:
+        raise ValueError(f"Failed to fetch Paper version details for {version_number}: {response.status_code} {response.reason}")
+
+    data = json.loads(response.content)
+    builds = data.get("builds")
+    if not builds:
+        raise ValueError(f"No builds found for Paper version {version_number}.")
+
+    return builds
 
 # Java server URLs
 JAVA_SERVER_URLS = {
     "vanilla": "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar",
-    "Paper": "https://papermc.io/api/v1/paper/{}/latest/download",
+    "Paper": lambda version: "https://api.papermc.io/v2/projects/paper/versions/{}/builds/{}/downloads/paper-{}-{}.jar".format(version, get_latest_build_number(version), version, get_latest_build_number(version)),
     "Forge": "https://files.minecraftforge.net/maven/net/minecraftforge/forge/{}/forge-{}-installer.jar",
     "Fabric": "https://maven.fabricmc.net/net/fabricmc/fabric-server-launcher/{}/fabric-server-launcher-{}-universal.jar"
 }
 
 # Bedrock server URLs
 BEDROCK_SERVER_URLS = {
-    "Bedrock": "https://dummy-bedrock-server-url.com/server.exe",
+    "Bedrock Dedicated Server": "https://dummy-bedrock-server-url.com/server.exe",
     "PocketMine": "https://dummy-pocketmine-server-url.com/server.phar",
     "Tesseract": "https://dummy-tesseract-server-url.com/server.zip",
     "BlueLight": "https://dummy-bluelight-server-url.com/server.jar",
@@ -132,7 +147,7 @@ def install_server(server_name, server_type):
 
     elif server_type == 2:  # Bedrock server
         # Prompt for subcategory
-        subcategory = int(input("Select the Bedrock server subcategory:\n1. Pocket Edition\n2. Windows 10 Edition\n3. Xbox One Edition\n4. PS4 Edition\n"))
+        subcategory = int(input("Select the Bedrock server subcategory:\n1. Bedrock Dedicated Server\n2. PocketMine\n3. Tesseract\n4. BlueLight\n5. Nukkit\n"))
 
         server_url = BEDROCK_SERVER_URLS.get(list(BEDROCK_SERVER_URLS.keys())[subcategory-1])
         if not server_url:
