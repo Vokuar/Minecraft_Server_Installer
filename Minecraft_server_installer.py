@@ -1,4 +1,4 @@
-import os
+mport os
 import string
 import subprocess
 import time
@@ -6,20 +6,7 @@ import shutil
 import platform
 import requests
 import json
-
-def get_latest_build_number(version_number):
-    url = f"https://papermc.io/api/v2/projects/paper/versions/{version_number}"
-
-    response = requests.get(url)
-    if not response.ok:
-        raise ValueError(f"Failed to fetch Paper version details for {version_number}: {response.status_code} {response.reason}")
-
-    data = json.loads(response.content)
-    builds = data.get("builds")
-    if not builds:
-        raise ValueError(f"No builds found for Paper version {version_number}.")
-
-    return builds
+import pathlib
 
 # Java server URLs
 JAVA_SERVER_URLS = {
@@ -37,6 +24,20 @@ BEDROCK_SERVER_URLS = {
     "BlueLight": "https://dummy-bluelight-server-url.com/server.jar",
     "Nukkit": "https://dummy-nukkit-server-url.com/server.jar",
 }
+
+def get_latest_build_number(version_number):
+    url = f"https://papermc.io/api/v2/projects/paper/versions/{version_number}"
+
+    response = requests.get(url)
+    if not response.ok:
+        raise ValueError(f"Failed to fetch Paper version details for {version_number}: {response.status_code} {response.reason}")
+
+    data = json.loads(response.content)
+    builds = data.get("builds")
+    if not builds:
+        raise ValueError(f"No builds found for Paper version {version_number}.")
+
+    return builds
 
 # Function to create a hidden folder
 def hide_folder(path):
@@ -57,6 +58,24 @@ def hide_folder(path):
         except subprocess.CalledProcessError:
             print("Unable to hide folder on macOS or Linux.")
 
+# Function to install a Minecraft server
+def install_server(server_name, server_type):
+    # Get the user's home directory
+    user_home = os.path.expanduser("~")
+
+# Create the hidden directory and subdirectory if they do not exist
+server_dir_name = ".Servers"
+server_dir_path = pathlib.Path(user_home) / server_dir_name
+if not server_dir_path.exists():
+    server_dir_path.mkdir()
+    hide_folder(str(server_dir_path))
+
+    java_dir_path = server_dir_path / ".Java_servers"
+    java_dir_path.mkdir()
+
+    bedrock_dir_path = server_dir_path / ".Bedrock_servers"
+    bedrock_dir_path.mkdir()
+            
 # Function to generate the server name based on user input and server type
 def generate_server_name(server_name, server_type):
     return f"{server_name}_{server_type}_Server"
