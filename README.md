@@ -12,7 +12,7 @@ This is a script to simplify the process of downloading and installing Minecraft
 
 - Windows:
   - Administrative privileges are recommended.
-- Unix-like Systems (Linux, macOS):
+- Unix-like Systems (Linux, macOS, Termux):
   - Administrative privileges may be required for certain installation steps.
 
 ## Usage
@@ -26,7 +26,7 @@ This is a script to simplify the process of downloading and installing Minecraft
 - The script will prompt you to install Chocolatey (package manager) and Python if not already installed. It will install these prerequisites for you if you choose to proceed with the installation.
 - Once Chocolatey and Python are installed, the script will proceed with downloading and installing the Minecraft server.
 
-### Unix-like Systems (Linux, macOS)
+### Unix-like Systems (Linux, macOS, Termux)
 
 - Run `start-unix.sh` to start the script on Unix-like systems.
 - The script will check for Python installation using the package manager first. If Python is not found, it will prompt you to install it manually or provide the installation link. It will handle the installation for you if you choose to proceed with it.
