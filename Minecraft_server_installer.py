@@ -190,3 +190,63 @@ def install_server(server_name, server_type):
     start_server(server_file, server_dir)
 
     print("Minecraft server installation and setup completed.")
+
+# Function to generate the server name based on user input and server type
+def generate_server_name(server_name, server_type):
+    return f"{server_name}_{server_type}_Server"
+
+# Function to download a server file with retry logic
+def download_server(url, file_path):
+    max_attempts = 3
+    attempt = 1
+    while attempt <= max_attempts:
+        print(f"Downloading server file from {url} (attempt {attempt})...")
+        try:
+            subprocess.run(["curl", "-o", file_path, url], check=True)
+            print("Download complete.")
+            return
+        except subprocess.CalledProcessError:
+            print("Download failed.")
+            attempt += 1
+
+    print(f"Failed to download server file from {url} after {max_attempts} attempts.")
+    print(f"Please download it manually from {url}.")
+
+# Function to check if an installation exists and prompt for reinstallation
+def check_existing_installation(server_dir):
+    if os.path.exists(server_dir):
+        choice = input("An existing installation was found. Do you want to reinstall? (y/n): ")
+        if choice.lower() == "y":
+            print("Reinstalling...")
+            shutil.rmtree(server_dir)
+        else:
+            print("Exiting.")
+            exit(0)
+
+# Function to accept the Minecraft EULA
+def accept_eula(server_dir):
+    eula_path = os.path.join(server_dir, "eula.txt")
+    with open(eula_path, "w") as eula_file:
+        eula_file.write("eula=true")
+
+# Function to start the Minecraft server and wait for file generation
+def start_server(server_file, server_dir):
+    print("Starting server...")
+    server_process = subprocess.Popen(["java", "-Xmx1024M", "-Xms1024M", "-jar", server_file, "nogui"])
+    time.sleep(10)
+
+    # Wait for file generation
+    print("Waiting for file generation...")
+    while not os.path.exists(os.path.join(server_dir, "server.properties")) or not os.path.exists(os.path.join(server_dir, "eula.txt")):
+        time.sleep(1)
+
+    print("File generation complete.")
+
+    # Stop the server if still running
+    if server_process.poll() is None:
+        print("Stopping server...")
+        server_process.terminate()
+        server_process.wait()
+        print("Server terminated.")
+
+    print("Minecraft server installation and setup completed.")
