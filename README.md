@@ -51,23 +51,23 @@ bash install-termux.sh
 ### Command-Line Interface (Termux/Advanced)
 ```bash
 # Install a new server
-python Minecraft_server_installer.py --install --cli
+python Minecraft_server_manager.py --install --cli
 
 # Manage existing servers
-python Minecraft_server_installer.py --manage --cli
+python Minecraft_server_manager.py --manage --cli
 ```
 
 #### CLI Examples:
 ```bash
 # Create a Java Vanilla 1.20.1 server
-> python Minecraft_server_installer.py --install --cli
+> python Minecraft_server_manager.py --install --cli
 Server name: MyVanillaServer
 Implementation (java/bedrock): java
 Version [1.20.1]: 
 Server type (vanilla/paper/fabric/forge): vanilla
 
 # Start a server
-> python Minecraft_server_installer.py --manage --cli
+> python Minecraft_server_manager.py --manage --cli
 1. MyVanillaServer (1.20.1, vanilla)
 2. MyPaperServer (1.20.1, paper)
 Select server: 1
