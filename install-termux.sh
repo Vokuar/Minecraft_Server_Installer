@@ -3,7 +3,7 @@
 
 REPO="https://raw.githubusercontent.com/Vokuar/Minecraft_Server_Installer/main"
 INSTALL_DIR="$HOME/minecraft-server"
-MAIN_INSTALLER="$INSTALL_DIR/minecraft_server_installer.py"
+MAIN_INSTALLER="$INSTALL_DIR/minecraft_server_manager.py"
 
 # Install Python if needed
 if ! command -v python3 >/dev/null; then
@@ -17,7 +17,7 @@ mkdir -p "$INSTALL_DIR"
 
 # Download main installer
 echo "Downloading Minecraft installer..."
-curl -fsSL -o "$MAIN_INSTALLER" "$REPO/minecraft_server_installer.py"
+curl -fsSL -o "$MAIN_INSTALLER" "$REPO/minecraft_server_manager.py"
 
 # Make executable and run
 chmod +x "$MAIN_INSTALLER"
