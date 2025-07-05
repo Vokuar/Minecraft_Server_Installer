@@ -14,8 +14,7 @@ import json
 import requests
 import shutil
 import argparse
-import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+import traceback
 
 # Define constants
 SERVER_MANAGER_DIR = os.path.join(os.path.expanduser("~"), ".minecraft_server_manager")
@@ -48,10 +47,27 @@ def is_termux():
     return "com.termux" in os.getenv("PREFIX", "")
 
 def is_gui_available():
-    """Check if GUI is available"""
+    """Check if GUI is available with better detection"""
     if is_termux():
-        return "DISPLAY" in os.environ or "WAYLAND_DISPLAY" in os.environ
-    return True  # Assume GUI available on desktop systems
+        # Termux requires special GUI setup
+        return False
+    
+    # For desktop systems
+    if platform.system() == "Windows":
+        return True
+    
+    # For Linux/macOS
+    return "DISPLAY" in os.environ or "WAYLAND_DISPLAY" in os.environ
+
+def try_import_tkinter():
+    """Safely attempt to import tkinter"""
+    try:
+        global tk, ttk, messagebox, simpledialog
+        import tkinter as tk
+        from tkinter import ttk, messagebox, simpledialog
+        return True
+    except ImportError:
+        return False
 
 def hide_folder(path):
     """Hide the server directory."""
@@ -551,6 +567,9 @@ def gui_manage_servers():
     app = ServerManagerGUI()
     app.mainloop()
 
+
+
+
 def main():
     """Main entry point with mode selection"""
     parser = argparse.ArgumentParser(description="Minecraft Server Installer and Manager")
@@ -566,7 +585,12 @@ def main():
     elif args.gui:
         use_gui = True
     else:
-        use_gui = is_gui_available() and not is_termux()
+        use_gui = is_gui_available()
+    
+    # Check if we can actually use GUI
+    if use_gui and not try_import_tkinter():
+        print("GUI requested but tkinter not available. Switching to CLI mode.")
+        use_gui = False
     
     # Determine operation
     if args.install:
@@ -576,18 +600,23 @@ def main():
     else:
         # Ask user what they want to do
         if use_gui:
-            root = tk.Tk()
-            root.withdraw()
-            choice = messagebox.askquestion("Minecraft Tools", "What would you like to do?", 
-                                          detail="Install a new server or manage existing servers?",
-                                          icon="question", type="yesnocancel",
-                                          default="yes")
-            if choice == "yes":
-                operation = "install"
-            elif choice == "no":
-                operation = "manage"
-            else:
-                return
+            try:
+                root = tk.Tk()
+                root.withdraw()
+                choice = messagebox.askquestion("Minecraft Tools", "What would you like to do?", 
+                                              detail="Install a new server or manage existing servers?",
+                                              icon="question", type="yesnocancel",
+                                              default="yes")
+                if choice == "yes":
+                    operation = "install"
+                elif choice == "no":
+                    operation = "manage"
+                else:
+                    return
+            except Exception as e:
+                print(f"GUI error: {str(e)}")
+                use_gui = False
+                operation = "install"  # Default to install
         else:
             print("1. Install new server")
             print("2. Manage existing servers")
@@ -595,16 +624,22 @@ def main():
             operation = "install" if choice == "1" else "manage"
     
     # Execute operation
-    if operation == "install":
-        if use_gui:
-            gui_install_server()
-        else:
-            cli_install_server()
-    else:  # manage
-        if use_gui:
-            gui_manage_servers()
-        else:
-            cli_manage_servers()
+    try:
+        if operation == "install":
+            if use_gui:
+                gui_install_server()
+            else:
+                cli_install_server()
+        else:  # manage
+            if use_gui:
+                gui_manage_servers()
+            else:
+                cli_manage_servers()
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        if is_termux():
+            print("For Termux users: Make sure you have required packages installed:")
+            print("pkg install python tkinter openjdk-17")
 
 if __name__ == "__main__":
     main()
