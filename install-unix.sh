@@ -3,7 +3,7 @@
 
 REPO="https://raw.githubusercontent.com/Vokuar/Minecraft_Server_Installer/main"
 INSTALL_DIR="$HOME/minecraft-server"
-MAIN_INSTALLER="$INSTALL_DIR/minecraft_server_installer.py"
+MAIN_INSTALLER="$INSTALL_DIR/minecraft_server_manager.py"
 
 # Install Python if needed
 if ! command -v python3 >/dev/null; then
@@ -29,9 +29,9 @@ mkdir -p "$INSTALL_DIR"
 # Download main installer
 echo "Downloading Minecraft installer..."
 if command -v curl >/dev/null; then
-    curl -fsSL -o "$MAIN_INSTALLER" "$REPO/minecraft_server_installer.py"
+    curl -fsSL -o "$MAIN_INSTALLER" "$REPO/minecraft_server_manager.py"
 else
-    wget -q -O "$MAIN_INSTALLER" "$REPO/minecraft_server_installer.py"
+    wget -q -O "$MAIN_INSTALLER" "$REPO/minecraft_server_manager.py"
 fi
 
 # Make executable and run
