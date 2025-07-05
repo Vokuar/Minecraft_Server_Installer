@@ -42,7 +42,6 @@ bash install-termux.sh
 ## Usage 🚀
 
 ### Graphical Interface (Desktop)
-![Server Manager GUI](https://via.placeholder.com/800x500.png?text=Minecraft+Server+Manager+GUI)
 
 1. Run the installer script
 2. Choose between:
