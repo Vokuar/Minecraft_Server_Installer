@@ -3,7 +3,7 @@
 
 set REPO=https://raw.githubusercontent.com/Vokuar/Minecraft_Server_Installer/main
 set INSTALL_DIR=%USERPROFILE%\minecraft-server
-set MAIN_INSTALLER=%INSTALL_DIR%\minecraft_server_installer.py
+set MAIN_INSTALLER=%INSTALL_DIR%\minecraft_server_manager.py
 
 :: Install Python if needed
 where python >nul 2>nul
@@ -20,7 +20,7 @@ if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 
 :: Download main installer
 echo Downloading Minecraft installer...
-curl -fsSL -o "%MAIN_INSTALLER%" "%REPO%/minecraft_server_installer.py" || (
+curl -fsSL -o "%MAIN_INSTALLER%" "%REPO%/minecraft_server_manager.py" || (
     echo Download failed
     exit /b 1
 )
